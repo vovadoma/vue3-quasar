@@ -1,8 +1,8 @@
 <template>
   <q-scroll-area
     ref="scroll"
-    style="height: calc(90vh - 300px)"
     :set-scroll-position="220"
+    class="usersOnline_scroll_area"
   >
     <div v-for="user in users" :key="user" class="q-px-md text-center">
       <q-badge rounded class="q-pa-xs" :color="user.online ? 'green' : 'red'" />
@@ -30,3 +30,8 @@
     },
   };
 </script>
+
+<style lang="sass" scoped>
+  .usersOnline_scroll_area
+    height: calc(90vh - 300px)
+</style>

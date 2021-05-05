@@ -2,8 +2,8 @@
   <div class="q-pa-md flex justify-center">
     <q-uploader
       ref="upload"
-      style="max-width: 300px"
       :factory="(files) => factoryFn(files)"
+      class="storage_uploader"
     />
   </div>
   <q-spinner
@@ -37,7 +37,7 @@
 </template>
 <script>
   import { useStore } from "vuex";
-  import { ref, computed, onMounted, watch } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { Dialog } from "quasar";
   export default {
     setup() {
@@ -54,12 +54,8 @@
         a.setAttribute("download", name);
         a.click();
       };
-      const uploadFile = (params) => {
-        dispatch("storage/uploadFile", params);
-      };
-      const getAllFiles = (params) => {
-        dispatch("storage/getAllFiles", params);
-      };
+      const uploadFile = (params) => dispatch("storage/uploadFile", params);
+      const getAllFiles = (params) => dispatch("storage/getAllFiles", params);
       const factoryFn = (files) => {
         const file = uploadFile({ file: files[0], user: user.value });
         upload.value.reset();
@@ -74,9 +70,7 @@
           removedFile({ user: user.value, file: file, index: index }),
         );
       };
-      onMounted(() => {
-        getAllFiles({ user: user.value });
-      });
+      onMounted(() => getAllFiles({ user: user.value }));
       return {
         factoryFn,
         files,
@@ -93,6 +87,8 @@
     width: 100%
     max-width: 250px
     padding: 20px
+  .storage_uploader
+    max-width: 300px
   .storage_file_name
     white-space: nowrap
     overflow: hidden

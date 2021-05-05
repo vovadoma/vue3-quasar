@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md" style="width: 100%">
+  <div class="q-pa-md calendarForm_main">
     <q-date
       v-model="currentDate"
       :events="eventsDate"
@@ -99,6 +99,8 @@
 </script>
 
 <style lang="sass">
+  .calendarForm_main
+    width:100%
   .calendarForm_q-date
     width: 100%
     height: calc(100vh - 150px)

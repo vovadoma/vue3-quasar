@@ -1,8 +1,8 @@
 <template>
-  <div :class="Screen.lt.md ? '' : 'q-pt-md'">
+  <div :class="Screen.lt.sm ? '' : 'q-pt-md'">
     <q-item class="bg-primary" dense>
       <q-btn
-        v-if="Screen.lt.md"
+        v-if="Screen.lt.sm"
         label="Rooms"
         flat
         color="white"
@@ -24,15 +24,7 @@
         </q-list>
       </q-btn-dropdown>
     </q-item>
-    <q-scroll-area
-      ref="scroll"
-      :style="
-        Screen.lt.md
-          ? 'height: calc(100vh - 150px)'
-          : 'height: calc(100vh - 250px)'
-      "
-      class="overflow-hidden"
-    >
+    <q-scroll-area ref="scroll" class="overflow-hidden chat_scroll_area">
       <div>
         <q-chat-message
           v-for="m in messages"
@@ -59,8 +51,7 @@
         placeholder="message"
         :rules="[(val) => !!val || '']"
         no-error-icon
-        style="width: 80%"
-        class="self-center"
+        class="self-center chat_sendMessage"
         bg-color="grey-2"
       >
         <template #after>
@@ -109,6 +100,7 @@
       const removePersonRoom = () => {
         dispatch("chat/removePersonRoom", { roomID: roomID, user: user.value });
         router.push("/rooms");
+        editDrawer.value = true;
       };
       const newMessage = (params) => dispatch("chat/newMessage", params);
       const sendMessage = () => {
@@ -144,8 +136,11 @@
   };
 </script>
 
-<style>
-  .chat {
-    flex-wrap: wrap;
+<style scoped lang="scss">
+  .chat_sendMessage {
+    width: 80%;
+  }
+  .chat_scroll_area {
+    height: calc(100vh - 250px);
   }
 </style>

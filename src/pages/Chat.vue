@@ -1,15 +1,15 @@
 <template>
   <div v-if="!loading && user" class="flex row">
-    <q-drawer v-if="Screen.lt.md" v-model="drawer">
+    <q-drawer v-if="Screen.lt.sm" v-model="drawer">
       <UserRooms v-model:tab="tab" />
     </q-drawer>
 
     <UserRooms v-else v-model:tab="tab" />
-    <div :class="Screen.lt.md ? '' : 'col-1'"></div>
+    <div :class="Screen.lt.sm ? '' : 'col-1'"></div>
     <q-tab-panels
       v-model="tab"
       class="justify-center"
-      :class="Screen.lt.md ? 'col-12' : 'col-6'"
+      :class="Screen.lt.sm ? 'col-12' : 'col-6'"
       animated
       vertical
       outside-arrows
@@ -20,7 +20,7 @@
         <Chat v-model:drawer="drawer" />
       </q-tab-panel>
     </q-tab-panels>
-    <div v-if="tab" :class="Screen.lt.md ? 'col-12' : 'col-2'">
+    <div v-if="tab" :class="Screen.lt.sm ? 'col-12' : 'col-2'">
       <div class="text-center text-h5">Users</div>
       <UsersOnline />
     </div>
@@ -51,7 +51,7 @@
       const loading = computed(() => state.auth.loading);
       const user = computed(() => getters["auth/isUser"]);
       const drawer = ref(false);
-      drawer.value = Screen.lt.md && !tab.value ? true : false;
+      drawer.value = Screen.lt.sm && !tab.value ? true : false;
 
       const signInRoom = (params) => dispatch("chat/signInRoom", params);
       onMounted(async () => {

@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="!loading"
-    class="q-mt-md col-3"
-    style="height: calc(100vh - 150px)"
-  >
+  <div v-if="!loading" class="q-mt-md col-3 userRooms_main">
     <div class="flex justify-center text-black q-mb-md">
       <div v-if="$q.screen.gt.sm" class="text-weight-bold text-body1">
         ROOMS
@@ -86,3 +82,8 @@
     },
   };
 </script>
+
+<style lang="sass" scoped>
+  .userRooms_main
+    height: calc(100vh - 150px)
+</style>
