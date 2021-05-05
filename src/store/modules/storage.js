@@ -5,7 +5,7 @@ const state = {
   loading: null,
 };
 const mutations = {
-  startFetch() {
+  startFetch(state) {
     state.loading = true;
   },
   setFiles(state, docs) {
@@ -13,12 +13,15 @@ const mutations = {
     state.loading = false;
   },
   setFile(state, file) {
-    state.files.push(file);
+    state.files.unshift(file);
     state.loading = false;
+  },
+  removeFile(state, index) {
+    state.files.splice(index, 1);
   },
 };
 const actions = {
-  async uploadFile({ commit }, { file, user }) {
+  async uploadFile({ commit, state }, { file, user }) {
     commit("startFetch");
     const storageRef = storage.ref().child(`${user.uid}/${file.name}`);
     await storageRef.put(file, { contentType: file.type });
@@ -29,9 +32,10 @@ const actions = {
       type: file.type,
       uid: user.uid,
     };
+    const newDoc = db.collection("storage").doc();
+    f.id = newDoc.id;
+    await newDoc.set(f);
     commit("setFile", f);
-    await db.collection("storage").add(f);
-    return f;
   },
   async getAllFiles({ commit }, { user }) {
     commit("startFetch");
@@ -40,6 +44,11 @@ const actions = {
       .where("uid", "==", user.uid)
       .get();
     commit("setFiles", docs);
+  },
+  async removedFile({ commit }, { user, file, index }) {
+    await storage.ref().child(`${user.uid}/${file.name}`).delete();
+    await db.collection("storage").doc(file.id).delete();
+    commit("removeFile", index);
   },
 };
 const getters = {};

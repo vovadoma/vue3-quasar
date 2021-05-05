@@ -51,30 +51,27 @@
       const loading = computed(() => state.auth.loading);
       const user = computed(() => getters["auth/isUser"]);
       const drawer = ref(false);
-      console.log("~ tab.value", tab.value);
       drawer.value = Screen.lt.md && !tab.value ? true : false;
 
       const signInRoom = (params) => dispatch("chat/signInRoom", params);
       onMounted(async () => {
         if (roomID.value) {
           try {
-            await signInRoom({
-              roomID: roomID.value,
-              user: user.value,
-            });
+            await signInRoom({ roomID: roomID.value, user: user.value });
           } catch (e) {
-            console.log("~ e", e);
             Notify.create({ message: "Room not found", color: "red" });
             router.push("/rooms");
           }
         }
       }),
-        onBeforeRouteUpdate((to, from) => {
+        onBeforeRouteUpdate(async (to, from) => {
           if (to.params.roomID && user.value?.uid) {
-            signInRoom({
-              user: user.value,
-              roomID: to.params.roomID,
-            });
+            try {
+              await signInRoom({ user: user.value, roomID: to.params.roomID });
+            } catch (e) {
+              Notify.create({ message: "Room not found", color: "red" });
+              router.push("/rooms");
+            }
           }
         });
       return {
