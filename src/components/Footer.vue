@@ -4,8 +4,8 @@
       <q-tabs>
         <q-route-tab flat :to="{ path: '/' }" icon="home" />
         <q-route-tab flat :to="{ name: 'rooms' }" icon="sms" />
-        <q-route-tab flat :to="{ name: 'calendar' }" icon="event" />
-        <q-route-tab flat :to="{ name: 'storage' }" icon="storage" />
+        <q-route-tab flat :to="{ path: '/calendar' }" icon="event" />
+        <q-route-tab flat :to="{ path: '/storage' }" icon="storage" />
         <div v-if="user" class="">
           <q-btn flat icon-right="exit_to_app" @click="logoutUser"></q-btn>
         </div>

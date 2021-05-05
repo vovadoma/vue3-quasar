@@ -43,7 +43,6 @@ const actions = {
     }
   },
   async logout({ commit }, user) {
-    console.log("~ user", user);
     await db.collection("users").doc(user.uid).update({ online: false });
     commit("logout");
   },

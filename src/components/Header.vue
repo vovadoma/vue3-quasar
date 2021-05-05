@@ -3,10 +3,10 @@
     <q-tabs v-if="user">
       <q-route-tab flat :to="{ path: '/' }" icon="home">Home</q-route-tab>
       <q-route-tab flat :to="{ name: 'rooms' }" icon="sms">Chat</q-route-tab>
-      <q-route-tab flat :to="{ name: 'calendar' }" icon="event"
+      <q-route-tab flat :to="{ path: '/calendar' }" icon="event"
         >Calendar</q-route-tab
       >
-      <q-route-tab flat :to="{ name: 'storage' }" icon="storage"
+      <q-route-tab flat :to="{ path: '/storage' }" icon="storage"
         >storage</q-route-tab
       >
     </q-tabs>

@@ -11,11 +11,11 @@
             <div class="text-h4 q-mb-md">{{ e?.eventName }}</div>
             <p class="words">{{ e?.description }}</p>
             <q-dialog
-              v-if="$q.screen.lt.md"
+              v-if="Screen.lt.md"
               v-model="showEvent"
               @before-hide="hideDialog()"
             >
-              <q-card class="bg-white">
+              <q-card class="bg-white q-pa-md">
                 <div class="text-h4">
                   {{ e?.eventName }}
                 </div>
@@ -28,7 +28,7 @@
       </template>
     </q-splitter>
 
-    <div v-if="$q.screen.lt.md">
+    <div v-if="Screen.lt.md">
       <CalendarForm v-model:date="date" v-model:event="event" />
     </div>
   </div>
@@ -37,6 +37,7 @@
 <script>
   import { useStore } from "vuex";
   import { ref, computed, watch } from "vue";
+  import { Screen } from "quasar";
   import CalendarForm from "../components/calendar/CalendarForm";
   export default {
     components: {
@@ -53,7 +54,7 @@
 
       const hideDialog = () => (date.value = "");
       watch(event, () => {
-        if (event.value?.eventID && $q.screen.lt.md) {
+        if (event.value?.eventID && Screen.lt.md) {
           showEvent.value = true;
         }
       });
@@ -66,6 +67,7 @@
         events,
         user,
         hideDialog,
+        Screen,
       };
     },
   };

@@ -4,8 +4,8 @@
       v-model="currentDate"
       :events="eventsDate"
       event-color="green"
-      style="width: 100%; height: calc(100vh - 150px)"
       today-btn
+      class="calendarForm_q-date"
     >
       <div class="flex justify-end">
         <q-btn
@@ -97,3 +97,9 @@
     methods: {},
   };
 </script>
+
+<style lang="sass">
+  .calendarForm_q-date
+    width: 100%
+    height: calc(100vh - 150px)
+</style>

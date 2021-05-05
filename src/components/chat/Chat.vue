@@ -1,12 +1,12 @@
 <template>
-  <div :class="$q.screen.lt.md ? '' : 'q-pt-md'">
+  <div :class="Screen.lt.md ? '' : 'q-pt-md'">
     <q-item class="bg-primary" dense>
       <q-btn
-        v-if="$q.screen.lt.md"
+        v-if="Screen.lt.md"
         label="Rooms"
         flat
         color="white"
-        @click="editDraver = !editDraver"
+        @click="editDrawer = !editDrawer"
       />
       <q-btn-dropdown color="white" label="Menu" flat>
         <q-list>
@@ -27,7 +27,7 @@
     <q-scroll-area
       ref="scroll"
       :style="
-        $q.screen.lt.md
+        Screen.lt.md
           ? 'height: calc(100vh - 150px)'
           : 'height: calc(100vh - 250px)'
       "
@@ -75,10 +75,11 @@
   import { ref, computed, watch } from "vue";
   import { useStore } from "vuex";
   import { useRoute, useRouter } from "vue-router";
+  import { Screen } from "quasar";
   import moment from "moment";
 
   export default {
-    emits: ["update:draver"],
+    emits: ["update:drawer"],
     setup(props, { emit }) {
       const { state, dispatch, getters } = useStore();
       const route = useRoute();
@@ -86,7 +87,7 @@
       const scroll = ref(null);
       const formMessage = ref(null);
       const copyBtn = () => navigator.clipboard.writeText(roomID);
-      const editDraver = ref(false);
+      const editDrawer = ref(false);
       const message = ref("");
       const dataChat = computed(() => state.chat.dataChat);
       const messages = computed(() => dataChat.value.messages);
@@ -120,8 +121,8 @@
         formMessage.value.reset();
         scrollToBottom();
       };
-      watch(editDraver, () => {
-        emit("update:draver", editDraver.value);
+      watch(editDrawer, () => {
+        emit("update:drawer", editDrawer.value);
       });
 
       return {
@@ -136,7 +137,8 @@
         router,
         copyBtn,
         moment,
-        editDraver,
+        editDrawer,
+        Screen,
       };
     },
   };
