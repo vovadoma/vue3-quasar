@@ -72,8 +72,10 @@
         }
       });
       onBeforeRouteUpdate(async (to, from) => {
-        unscribeMessages.value();
-        unscribeUsers.value();
+        if (from.params.roomID && user.value.uid) {
+          unscribeMessages.value();
+          unscribeUsers.value();
+        }
         if (to.params.roomID && user.value?.uid) {
           try {
             await signInRoom({ user: user.value, roomID: to.params.roomID });

@@ -20,8 +20,10 @@ const mutations = {
     });
   },
   removeEvent(state, eventID) {
+    console.log("~ eventID", eventID);
     state.events.forEach((event, index) => {
       if (event.eventID === eventID) {
+        console.log(event, index);
         state.events.splice(index, 1);
       }
     });
