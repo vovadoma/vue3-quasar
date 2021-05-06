@@ -50,6 +50,7 @@ const mutations = {
     state.loading = false;
   },
   setNextMessage(state, docs) {
+    state.lastMessage = null;
     docs.forEach((doc) => {
       state.dataChat?.messages.unshift(doc.data());
     });

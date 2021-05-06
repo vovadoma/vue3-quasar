@@ -33,7 +33,7 @@
         v-if="loading"
         size="5rem"
         color="primary"
-        class="flex"
+        class="flex absolute-top"
         style="margin: 0 auto"
       />
 
@@ -116,9 +116,14 @@
         editDrawer.value = true;
       };
 
-      const scrollFunc = (info) => {
+      const scrollFunc = async (info) => {
+        const lastSize = info.verticalSize;
         if (info.verticalPosition === 0) {
-          nextMessage(roomID);
+          await nextMessage(roomID);
+          scroll.value.setScrollPosition(
+            "vertical",
+            scroll.value.getScrollTarget().scrollHeight - lastSize,
+          );
         }
       };
 
