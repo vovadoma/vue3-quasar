@@ -24,8 +24,9 @@ const actions = {
     commit("startFetch");
     data.uid = uid;
     data.online = true;
+    const { password, ...otherData } = data;
     try {
-      await db.collection("users").doc(uid).set(data);
+      await db.collection("users").doc(uid).set(otherData);
       commit("setUser", data);
     } catch (e) {
       throw e;

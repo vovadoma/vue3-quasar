@@ -9,7 +9,7 @@
         <q-tab-panels v-model="date" animated>
           <q-tab-panel v-for="e in events" :key="e.date" :name="e.date">
             <div class="text-h4 q-mb-md">{{ e?.eventName }}</div>
-            <p class="words">{{ e?.description }}</p>
+            <p class="words" v-html="e?.description"></p>
             <q-dialog
               v-if="Screen.lt.md"
               v-model="showEvent"
@@ -20,7 +20,7 @@
                   {{ e?.eventName }}
                 </div>
                 <q-separator class="q-mb-md" />
-                <p class="flex column words">{{ e?.description }}</p>
+                <p class="flex column words" v-html="e?.description"></p>
               </q-card>
             </q-dialog>
           </q-tab-panel>

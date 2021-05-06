@@ -178,7 +178,6 @@ const actions = {
           }
         });
       });
-    console.log(unsubscribe);
   },
 
   async removePersonRoom({ commit }, { roomID, user }) {
@@ -202,7 +201,6 @@ const actions = {
       .onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const { newIndex, oldIndex, doc, type } = change;
-          console.log("~ type", type);
           if (type === "added") {
             commit("addMessage", { newIndex, data: doc });
           }

@@ -64,13 +64,9 @@
           title: "Remove event",
           message: "Are u sure?",
           cancel: true,
-        })
-          .onOk(() => {
-            removeEvent(currentEvent.value);
-          })
-          .onCancel(() => {
-            console.log("cancel");
-          });
+        }).onOk(() => {
+          removeEvent(currentEvent.value);
+        });
       };
 
       watch(currentDate, () => {

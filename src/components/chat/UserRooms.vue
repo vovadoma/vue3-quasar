@@ -1,8 +1,12 @@
 <template>
-  <div v-if="!loading" class="q-mt-md col-3 userRooms_main">
+  <div
+    v-if="!loading"
+    class="q-mt-md q-pl-md col-3 col-lg-2 col-xl-2 userRooms_main"
+  >
+    <UserCard />
     <div class="flex justify-center text-black q-mb-md">
       <div v-if="$q.screen.gt.sm" class="text-weight-bold text-body1">
-        ROOMS
+        Active chats
       </div>
       <div class="self-center">
         <q-icon name="add" size="1.5rem" class="cursor-pointer" />
@@ -22,11 +26,11 @@
     <q-tabs
       v-model="editTab"
       vertical
-      class="text-teal col-12"
-      active-bg-color="teal"
-      active-color="white"
+      class="text-dark col-12"
+      active-bg-color="blue-grey-1"
+      active-color="dark"
     >
-      <q-scroll-area class="full-height">
+      <q-scroll-area class="userRooms_main">
         <q-route-tab
           v-for="room in rooms"
           :key="room.roomID"
@@ -37,7 +41,6 @@
       </q-scroll-area>
     </q-tabs>
   </div>
-
   <q-dialog v-model="showNewDialog">
     <FormAddRoom :action="action" />
   </q-dialog>
@@ -47,10 +50,12 @@
   import { ref, onMounted, watch, computed } from "vue";
   import { useStore } from "vuex";
   import FormAddRoom from "./FormAddRoom";
+  import UserCard from "../UserCard";
 
   export default {
     components: {
       FormAddRoom,
+      UserCard,
     },
     props: { tab: { required: true, type: String, default: "" } },
     emits: ["update:tab"],
@@ -66,7 +71,6 @@
         action.value = event;
         showNewDialog.value = true;
       };
-
       const getAllRooms = (uid) => dispatch("chat/getAllRooms", uid);
       watch(editTab, () => emit("update:tab", editTab.value));
       onMounted(() => getAllRooms(user.value.uid));
@@ -85,5 +89,5 @@
 
 <style lang="sass" scoped>
   .userRooms_main
-    height: calc(100vh - 150px)
+    height: calc(100vh - 400px)
 </style>

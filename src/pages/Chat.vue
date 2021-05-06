@@ -1,28 +1,30 @@
 <template>
   <div v-if="!loading && user" class="flex row">
+    <q-icon
+      v-if="!tab && Screen.lt.sm"
+      name="menu"
+      size="2rem"
+      @click="drawer = !drawer"
+    />
     <q-drawer v-if="Screen.lt.sm" v-model="drawer">
       <UserRooms v-model:tab="tab" />
     </q-drawer>
-
     <UserRooms v-else v-model:tab="tab" />
-    <div :class="Screen.lt.sm ? '' : 'col-1'"></div>
+    <div class="col-sm-1 col-xs-0"></div>
     <q-tab-panels
       v-model="tab"
-      class="justify-center"
-      :class="Screen.lt.sm ? 'col-12' : 'col-6'"
+      class="col-xs-12 col-sm-5 col-md-5 justify-center full-height"
       animated
       vertical
       outside-arrows
       transition-prev="jump-up"
       transition-next="jump-up"
     >
-      {{ roomID }}
       <q-tab-panel :name="roomID" class="no-padding no-margin">
         <Chat v-model:drawer="drawer" />
       </q-tab-panel>
     </q-tab-panels>
-    <div v-if="tab" :class="Screen.lt.sm ? 'col-12' : 'col-2'">
-      <div class="text-center text-h5">Users</div>
+    <div v-if="tab" class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
       <UsersOnline />
     </div>
   </div>
@@ -99,3 +101,5 @@
     },
   };
 </script>
+
+<style scoped lang="scss"></style>

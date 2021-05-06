@@ -1,14 +1,17 @@
 <template>
-  <div :class="Screen.lt.sm ? '' : 'q-pt-md'">
-    <q-item class="bg-primary" dense>
+  <q-card
+    class="bg-blue-grey-1 chat_chatCard"
+    :class="Screen.lt.sm ? '' : 'q-mt-lg'"
+  >
+    <q-item dense>
       <q-btn
         v-if="Screen.lt.sm"
         label="Rooms"
         flat
-        color="white"
+        color="dark"
         @click="editDrawer = !editDrawer"
       />
-      <q-btn-dropdown color="white" label="Menu" flat>
+      <q-btn-dropdown color="dark " label="Menu" flat>
         <q-list>
           <q-item v-close-popup clickable @click="removePersonRoom">
             <q-item-section>
@@ -24,6 +27,7 @@
         </q-list>
       </q-btn-dropdown>
     </q-item>
+
     <q-scroll-area
       ref="scroll"
       class="overflow-hidden chat_scroll_area"
@@ -37,21 +41,35 @@
         style="margin: 0 auto"
       />
 
-      <div>
-        <q-chat-message
-          v-for="m in messages"
-          :key="m.date"
-          class="q-px-md"
-          :name="m.fullName"
-          :text="[`${m.message}`]"
-          :sent="m.uid === user.uid"
-          :stamp="moment(m.date).fromNow()"
-        />
-      </div>
+      <q-chat-message
+        v-for="m in messages"
+        :key="m.date"
+        class="q-px-md"
+        :name="m.fullName"
+        :text="[`${m.message}`]"
+        :sent="m.uid === user.uid"
+        :bg-color="m.uid === user.uid ? 'white' : 'blue-grey-8'"
+        :text-color="m.uid === user.uid ? 'dark' : 'white '"
+        :stamp="moment(m.date).fromNow()"
+      >
+        <template #avatar>
+          <q-avatar
+            :class="
+              m.uid === user.uid
+                ? 'q-message-avatar--sent'
+                : 'q-message-avatar--received'
+            "
+            color="primary"
+            text-color="white"
+            >{{ m.fullName[0] }}</q-avatar
+          >
+        </template>
+      </q-chat-message>
     </q-scroll-area>
+
     <q-form
       ref="formMessage"
-      class="flex justify-center"
+      class="flex justify-center q-py-md"
       autofocus
       @submit="sendMessage"
     >
@@ -71,7 +89,7 @@
         </template>
       </q-input>
     </q-form>
-  </div>
+  </q-card>
 </template>
 
 <script>
@@ -139,12 +157,8 @@
         formMessage.value.reset();
         scrollToBottom();
       };
-      watch(editDrawer, () => {
-        emit("update:drawer", editDrawer.value);
-      });
-      onMounted(() => {
-        scrollToBottom();
-      });
+      watch(editDrawer, () => emit("update:drawer", editDrawer.value));
+      onMounted(() => scrollToBottom());
 
       return {
         scroll,
@@ -168,6 +182,9 @@
 </script>
 
 <style scoped lang="scss">
+  .chat_chatCard {
+    border-radius: 1%;
+  }
   .chat_sendMessage {
     width: 80%;
   }
