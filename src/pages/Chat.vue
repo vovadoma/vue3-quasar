@@ -16,6 +16,7 @@
       transition-prev="jump-up"
       transition-next="jump-up"
     >
+      {{ roomID }}
       <q-tab-panel :name="roomID" class="no-padding no-margin">
         <Chat v-model:drawer="drawer" />
       </q-tab-panel>
@@ -51,29 +52,39 @@
       const loading = computed(() => state.auth.loading);
       const user = computed(() => getters["auth/isUser"]);
       const drawer = ref(false);
-      drawer.value = Screen.lt.sm && !tab.value ? true : false;
+      const unscribeMessages = ref(null);
+      const unscribeUsers = ref(null);
 
+      drawer.value = Screen.lt.sm && !tab.value ? true : false;
       const signInRoom = (params) => dispatch("chat/signInRoom", params);
+      const bindRoomMessage = (r) => dispatch("chat/bindRoomMessage", r);
+      const bindRoomUsers = (r) => dispatch("chat/bindRoomUsers", r);
       onMounted(async () => {
         if (roomID.value) {
           try {
             await signInRoom({ roomID: roomID.value, user: user.value });
+            unscribeMessages.value = await bindRoomMessage(roomID.value);
+            unscribeUsers.value = await bindRoomUsers(roomID.value);
           } catch (e) {
             Notify.create({ message: "Room not found", color: "red" });
             router.push("/rooms");
           }
         }
-      }),
-        onBeforeRouteUpdate(async (to, from) => {
-          if (to.params.roomID && user.value?.uid) {
-            try {
-              await signInRoom({ user: user.value, roomID: to.params.roomID });
-            } catch (e) {
-              Notify.create({ message: "Room not found", color: "red" });
-              router.push("/rooms");
-            }
+      });
+      onBeforeRouteUpdate(async (to, from) => {
+        unscribeMessages.value();
+        unscribeUsers.value();
+        if (to.params.roomID && user.value?.uid) {
+          try {
+            await signInRoom({ user: user.value, roomID: to.params.roomID });
+            unscribeMessages.value = await bindRoomMessage(to.params.roomID);
+            unscribeUsers.value = await bindRoomUsers(to.params.roomID);
+          } catch (e) {
+            Notify.create({ message: "Room not found", color: "red" });
+            router.push("/rooms");
           }
-        });
+        }
+      });
       return {
         tab,
         loading,

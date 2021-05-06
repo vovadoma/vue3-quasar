@@ -8,6 +8,7 @@ const state = {
   },
   limitMessage: 10,
   lastMessage: null,
+  currentRoom: [],
 };
 const mutations = {
   startFetch(state) {
@@ -21,10 +22,9 @@ const mutations = {
   startLoading(state) {
     state.loading = true;
   },
-  addNewRoom(state, room) {
-    state.rooms.push(room);
-    state.loading = false;
-  },
+
+  //ROOMS
+
   setRooms(state, rooms) {
     state.rooms = [];
     rooms.forEach((doc) => {
@@ -32,8 +32,9 @@ const mutations = {
     });
     state.loading = false;
   },
-  setUsers(state, data) {
-    state.dataChat.users = data;
+  addNewRoom(state, room) {
+    state.rooms.push(room);
+    state.loading = false;
   },
   removeCurrentRoom(state, roomID) {
     state.loading = false;
@@ -44,24 +45,12 @@ const mutations = {
       }
     });
   },
-  addMessage(state, { data }) {
-    state.dataChat?.messages.push(data.data());
-    state.lastMessage = state.dataChat.messages[0];
-    state.loading = false;
-  },
-  setNextMessage(state, docs) {
-    state.lastMessage = null;
-    docs.forEach((doc) => {
-      state.dataChat?.messages.unshift(doc.data());
-    });
-    state.lastMessage = state.dataChat.messages[0];
-    state.loading = false;
-  },
-  removeMessage(state, { oldIndex }) {
-    state.dataChat.messages.splice(oldIndex, 1);
-    state.loading = false;
-  },
 
+  //USERS
+
+  setUsers(state, data) {
+    state.dataChat.users = data;
+  },
   addUsers(state, { data }) {
     data.data().users.forEach((user) => {
       state.dataChat?.users?.push(user);
@@ -77,9 +66,34 @@ const mutations = {
     state.dataChat.users = [...data.data()?.users] || [];
     state.loading = false;
   },
+
+  //MESSAGES
+
+  addMessage(state, { data }) {
+    state.dataChat?.messages.push(data.data());
+    state.lastMessage = state.dataChat.messages[0];
+    state.loading = false;
+  },
+  setNextMessage(state, docs) {
+    state.lastMessage = null;
+    docs.forEach((doc) => {
+      state.dataChat?.messages.unshift(doc.data());
+    });
+    state.lastMessage = state.dataChat.messages[0];
+    state.loading = false;
+  },
 };
 const actions = {
   // ROOMS
+  async getAllRooms({ commit }, uid) {
+    commit("startFetch");
+    const { docs } = await db
+      .collection("rooms")
+      .where("users", "array-contains", uid)
+      .get();
+    commit("setRooms", docs);
+  },
+
   async createRoom({ commit }, { user, roomName, action = "create" }) {
     try {
       if (action === "join") {
@@ -115,14 +129,14 @@ const actions = {
         .collection("rooms")
         .doc(roomID)
         .update({ users: firebase.firestore.FieldValue.arrayUnion(uid) });
-      dispatch("bindRoomMessage", roomID);
-      dispatch("bindRoomUsers", roomID);
       return roomID;
     } catch (e) {
       commit("removeCurrentRoom");
       throw e;
     }
   },
+
+  //USERS
 
   async getUsers({ state, commit }) {
     const arrays = [];
@@ -143,17 +157,10 @@ const actions = {
     });
     commit("setUsers", parseData);
   },
-  async getAllRooms({ commit }, uid) {
-    commit("startFetch");
-    const { docs } = await db
-      .collection("rooms")
-      .where("users", "array-contains", uid)
-      .get();
-    commit("setRooms", docs);
-  },
 
   bindRoomUsers({ commit, dispatch }, roomID) {
-    db.collection("rooms")
+    return db
+      .collection("rooms")
       .where("roomID", "==", roomID)
       .onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
@@ -171,6 +178,7 @@ const actions = {
           }
         });
       });
+    console.log(unsubscribe);
   },
 
   async removePersonRoom({ commit }, { roomID, user }) {
@@ -185,7 +193,8 @@ const actions = {
 
   // MESSAGE
   bindRoomMessage({ commit, state }, roomID) {
-    db.collection("rooms")
+    return db
+      .collection("rooms")
       .doc(roomID)
       .collection("messages")
       .limitToLast(state.limitMessage)
@@ -193,19 +202,16 @@ const actions = {
       .onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const { newIndex, oldIndex, doc, type } = change;
+          console.log("~ type", type);
           if (type === "added") {
             commit("addMessage", { newIndex, data: doc });
           }
           if (type === "modified") {
             commit("updMessage", { newIndex, oldIndex, data: doc });
           }
-          if (type === "removed") {
-            commit("removeMessage", { oldIndex, data: doc });
-          }
         });
       });
   },
-
   async nextMessage({ commit, state }, roomID) {
     if (state.lastMessage?.date) {
       commit("startLoading");
@@ -220,9 +226,10 @@ const actions = {
       commit("setNextMessage", docs);
     }
   },
-  newMessage(store, { roomID, message, user }) {
+  async newMessage(store, { roomID, message, user }) {
     const date = Date.now();
-    db.collection("rooms")
+    await db
+      .collection("rooms")
       .doc(roomID)
       .collection("messages")
       .add({
