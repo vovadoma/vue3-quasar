@@ -1,5 +1,4 @@
 import { db, firebase } from "../../firebase";
-import moment from "moment";
 const state = {
   loading: null,
   rooms: [],
@@ -17,6 +16,10 @@ const mutations = {
       messages: [],
       users: [],
     };
+    state.lastMessage = null;
+  },
+  startLoading(state) {
+    state.loading = true;
   },
   addNewRoom(state, room) {
     state.rooms.push(room);
@@ -43,9 +46,15 @@ const mutations = {
   },
   addMessage(state, { data }) {
     state.dataChat?.messages.push(data.data());
+    state.lastMessage = state.dataChat.messages[0];
     state.loading = false;
-    // state.lastMessage =
-    //   state.dataChat.messages[state.dataChat.messages.length - 1];
+  },
+  setNextMessage(state, docs) {
+    docs.forEach((doc) => {
+      state.dataChat?.messages.unshift(doc.data());
+    });
+    state.lastMessage = state.dataChat.messages[0];
+    state.loading = false;
   },
   removeMessage(state, { oldIndex }) {
     state.dataChat.messages.splice(oldIndex, 1);
@@ -178,9 +187,8 @@ const actions = {
     db.collection("rooms")
       .doc(roomID)
       .collection("messages")
-      // .limitToLast(state.limitMessage)
-      // .orderBy("date")
-      // .startAfter(state.lastMessage || 0)
+      .limitToLast(state.limitMessage)
+      .orderBy("date")
       .onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const { newIndex, oldIndex, doc, type } = change;
@@ -197,9 +205,22 @@ const actions = {
       });
   },
 
-  nextMessage() {},
+  async nextMessage({ commit, state }, roomID) {
+    if (state.lastMessage?.date) {
+      commit("startLoading");
+      const { docs } = await db
+        .collection("rooms")
+        .doc(roomID)
+        .collection("messages")
+        .orderBy("date", "desc")
+        .startAfter(state.lastMessage?.date)
+        .limit(state.limitMessage)
+        .get();
+      commit("setNextMessage", docs);
+    }
+  },
   newMessage(store, { roomID, message, user }) {
-    const date = moment().format("LLL");
+    const date = Date.now();
     db.collection("rooms")
       .doc(roomID)
       .collection("messages")

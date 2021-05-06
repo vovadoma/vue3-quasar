@@ -24,7 +24,19 @@
         </q-list>
       </q-btn-dropdown>
     </q-item>
-    <q-scroll-area ref="scroll" class="overflow-hidden chat_scroll_area">
+    <q-scroll-area
+      ref="scroll"
+      class="overflow-hidden chat_scroll_area"
+      @scroll="(info) => scrollFunc(info)"
+    >
+      <q-spinner-dots
+        v-if="loading"
+        size="5rem"
+        color="primary"
+        class="flex"
+        style="margin: 0 auto"
+      />
+
       <div>
         <q-chat-message
           v-for="m in messages"
@@ -63,7 +75,7 @@
 </template>
 
 <script>
-  import { ref, computed, watch } from "vue";
+  import { ref, computed, watch, onMounted } from "vue";
   import { useStore } from "vuex";
   import { useRoute, useRouter } from "vue-router";
   import { Screen } from "quasar";
@@ -77,17 +89,18 @@
       const router = useRouter();
       const scroll = ref(null);
       const formMessage = ref(null);
-      const copyBtn = () => navigator.clipboard.writeText(roomID);
       const editDrawer = ref(false);
       const message = ref("");
       const dataChat = computed(() => state.chat.dataChat);
+      const loading = computed(() => state.chat.loading);
       const messages = computed(() => dataChat.value.messages);
       const user = computed(() => getters["auth/isUser"]);
       const roomID = route.params.roomID;
       const fullName = computed(
         () => `${user.value.firstName} ${user.value.lastName}`,
       );
-
+      const copyBtn = () => navigator.clipboard.writeText(roomID);
+      const nextMessage = (params) => dispatch("chat/nextMessage", params);
       const scrollToBottom = () => {
         const scrollTarget = scroll.value.getScrollTarget();
         const duration = 10;
@@ -102,7 +115,15 @@
         router.push("/rooms");
         editDrawer.value = true;
       };
+
+      const scrollFunc = (info) => {
+        if (info.verticalPosition === 0) {
+          nextMessage(roomID);
+        }
+      };
+
       const newMessage = (params) => dispatch("chat/newMessage", params);
+
       const sendMessage = () => {
         newMessage({
           roomID: roomID,
@@ -115,6 +136,9 @@
       };
       watch(editDrawer, () => {
         emit("update:drawer", editDrawer.value);
+      });
+      onMounted(() => {
+        scrollToBottom();
       });
 
       return {
@@ -131,6 +155,8 @@
         moment,
         editDrawer,
         Screen,
+        scrollFunc,
+        loading,
       };
     },
   };
