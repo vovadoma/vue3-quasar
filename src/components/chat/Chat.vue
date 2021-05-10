@@ -61,8 +61,15 @@
             "
             color="primary"
             text-color="white"
-            >{{ m.fullName[0] }}</q-avatar
           >
+            <img
+              v-if="m.uid === user.uid && user.avatarURL"
+              :src="m.uid === user.uid ? user.avatarURL : ''"
+            />
+            <div v-else>
+              {{ m.fullName[0] }}
+            </div>
+          </q-avatar>
         </template>
       </q-chat-message>
     </q-scroll-area>

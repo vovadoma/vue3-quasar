@@ -34,12 +34,21 @@
       </q-card-section>
     </q-card>
   </div>
+  <div class="flex justify-center">
+    <q-card class="q-ma-md">
+      <UploadAvarar />
+    </q-card>
+  </div>
 </template>
 <script>
   import { useStore } from "vuex";
   import { ref, computed, onMounted } from "vue";
   import { Dialog } from "quasar";
+  import UploadAvarar from "../components/UploadAvatar";
   export default {
+    components: {
+      UploadAvarar,
+    },
     setup() {
       const { state, dispatch, getters } = useStore();
       const user = computed(() => getters["auth/isUser"]);
@@ -83,14 +92,15 @@
   };
 </script>
 <style lang="sass" scoped>
-  .my-card
-    width: 100%
-    max-width: 250px
-    padding: 20px
-  .storage_uploader
-    max-width: 300px
-  .storage_file_name
-    white-space: nowrap
-    overflow: hidden
-    text-overflow: ellipsis
+    .my-card
+      width: 100%
+      max-width: 250px
+      padding: 20px
+    .storage_uploader
+      max-width: 300px
+    .storage_file_name
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+  
 </style>

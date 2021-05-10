@@ -37,6 +37,12 @@ const actions = {
     await newDoc.set(f);
     commit("setFile", f);
   },
+  async uploadAvatar({ commit, state }, { file, user }) {
+    const storageRef = storage.ref().child(`${user.uid}/avatar`);
+    await storageRef.putString(file, "data_url");
+    const url = await storageRef.getDownloadURL();
+    await db.collection("users").doc(user.uid).update({ avatarURL: url });
+  },
   async getAllFiles({ commit }, { user }) {
     commit("startFetch");
     const { docs } = await db

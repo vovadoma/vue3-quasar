@@ -12,8 +12,12 @@
           color="primary"
           text-color="white"
           class="text-center"
-          >{{ firstLetter }}</q-avatar
         >
+          <img v-if="avatar" :src="avatar" />
+          <div v-else>
+            {{ firstLetter }}
+          </div>
+        </q-avatar>
       </q-card-section>
       <q-card-section> {{ fullName }} </q-card-section>
     </q-card>
@@ -30,10 +34,12 @@
       const fullName = computed(
         () => `${user.value.firstName} ${user.value.lastName}`,
       );
+      const avatar = computed(() => user.value.avatarURL);
       return {
         user,
         firstLetter,
         fullName,
+        avatar,
       };
     },
   };
