@@ -9,6 +9,7 @@
       <q-route-tab flat :to="{ path: '/storage' }" icon="storage"
         >storage</q-route-tab
       >
+      <q-route-tab flat :to="{ path: '/payment' }" icon="payment">payment</q-route-tab>
     </q-tabs>
     <q-space />
     <div v-if="user" class="flex">

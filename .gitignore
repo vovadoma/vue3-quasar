@@ -2,6 +2,7 @@
 .thumbs.db
 node_modules
 /src/firebase/connect.js
+/src/config/stripe.js
 
 # Quasar core related directories
 .quasar
